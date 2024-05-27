@@ -42,3 +42,16 @@ class LibrisConnection:
             )
             items = items + response.json()['items']
         return items
+
+    def update(self, instance):
+
+        response = requests.put(
+            instance.id,
+            timeout=30,
+            headers={
+                'If-Match': instance.etag,
+                'Authorization': f'Bearer {Auth.token}',
+                'Content-Type': 'application/json+ld',
+                "XL-active-sigel":'Mtm'},
+            data=instance.data
+        )
