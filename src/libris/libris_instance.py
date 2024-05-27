@@ -7,6 +7,7 @@ class LibrisInstance:
     def __init__(self, etag, libris_instance):
         self.etag = etag
         self.data = libris_instance
+        self.id = self.nav(['@graph','@id'])[:-3]
 
     def nav(self, path):
         """navigate the data to the right point"""
