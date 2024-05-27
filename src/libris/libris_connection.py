@@ -1,5 +1,6 @@
 """Module for handling connecting to Libris"""
 import requests
+from .libris_instance import LibrisInstance
 
 
 class LibrisConnection:
@@ -16,7 +17,7 @@ class LibrisConnection:
             params={'embellished': 'false'},
             timeout=5
         )
-        return response.json()
+        return LibrisInstance(libris_instance=response.json(), etag=response.headers['etag'])
 
     def find(self, query):
         """Gets the items from the search query"""
