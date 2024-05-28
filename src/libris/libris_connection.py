@@ -12,11 +12,12 @@ class LibrisConnection:
     def get(self, libris_id):
         """Get a post with its Libris id"""
         response = requests.get(
-            f'{self.libris_url}/{libris_id}',
+            f'{self.libris_url}{libris_id}',
             headers={'accept': 'application/json+ld'},
             params={'embellished': 'false'},
             timeout=5
         )
+        response.raise_for_status()
         return LibrisInstance(libris_instance=response.json(), etag=response.headers['etag'])
 
     def find(self, query):
@@ -32,7 +33,8 @@ class LibrisConnection:
             headers={'accept': 'application/json+ld'},
             timeout=30
         )
-        items = response.json()['items']
+        response.raise_for_status()
+        items += response.json()['items']
         while 'next' in response.json():
             next_query = response.json()['next']['@id']
             response = requests.get(
@@ -40,18 +42,20 @@ class LibrisConnection:
                 headers={'accept': 'application/json+ld'},
                 timeout=30
             )
-            items = items + response.json()['items']
+            response.raise_for_status()
+            items += response.json()['items']
         return items
 
     def update(self, instance):
-
+        """Updates a Libris instance"""
         response = requests.put(
-            instance.id,
+            f'{self.libris_url}{instance.id}',
             timeout=30,
             headers={
                 'If-Match': instance.etag,
-                'Authorization': f'Bearer {Auth.token}',
+                'Authorization': 'Bearer ',
                 'Content-Type': 'application/json+ld',
-                "XL-active-sigel":'Mtm'},
+                "XL-active-sigel": 'Mtm'},
             data=instance.data
         )
+        response.raise_for_status()

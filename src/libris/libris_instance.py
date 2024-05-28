@@ -1,4 +1,5 @@
 """Module for handling librisinstances"""
+import urllib.parse as urlparse
 
 
 class LibrisInstance:
@@ -7,10 +8,10 @@ class LibrisInstance:
     def __init__(self, etag, libris_instance):
         self.etag = etag
         self.data = libris_instance
-        self.id = self.nav(['@graph','@id'])[:-3]
+        self.id = urlparse.urlparse(self.nav(['@graph', '@id'])).path
 
     def nav(self, path):
-        """navigate the data to the right point"""
+        """navigate the data to the specified point"""
         point = self.data
         for key in path:
             if isinstance(point, dict) and key in point:
